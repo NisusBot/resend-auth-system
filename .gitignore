@@ -1,0 +1,65 @@
+# 二进制文件
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# 测试二进制文件
+*.test
+
+# 输出目录
+output/
+dist/
+
+# 依赖目录
+vendor/
+
+# Go工作空间文件
+*.workspace
+
+# 环境变量文件
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+data/
+
+# 日志文件
+*.log
+logs/
+
+# 编辑器文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 构建产物
+coverage.out
+coverage.html
+
+# Docker构建缓存
+.dockerignore
+
+# 临时文件
+tmp/
+temp/
+
+# 配置文件（生产环境不要提交）
+config/config.local.yaml
+
+# 用户上传文件
+uploads/

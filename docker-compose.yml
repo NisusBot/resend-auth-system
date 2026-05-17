@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  resend-auth-system:
+    build: .
+    container_name: resend-auth-system
+    ports:
+      - "8080:8080"
+    environment:
+      - APP_ENV=production
+      - APP_PORT=8080
+      - DB_DRIVER=sqlite3
+      - DB_PATH=/app/data/auth.db
+      - MAGIC_CODE=${MAGIC_CODE:-123456}
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key-change-this-in-production}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL:-noreply@example.com}
+      - RESEND_FROM_NAME=${RESEND_FROM_NAME:-Resend Auth System}
+      - UI_TITLE=${UI_TITLE:-Resend邮箱验证码审核系统}
+      - UI_THEME=${UI_THEME:-dark}
+      - UI_BACKGROUND_COLOR=${UI_BACKGROUND_COLOR:-#121212}
+      - UI_PRIMARY_COLOR=${UI_PRIMARY_COLOR:-#1db954}
+      - RATE_LIMIT=${RATE_LIMIT:-10}
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+      - ./static:/app/static
+      - ./templates:/app/templates
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    networks:
+      - resend-network
+
+networks:
+  resend-network:
+    driver: bridge

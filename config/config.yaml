@@ -1,0 +1,35 @@
+# Resend邮箱验证码审核页系统配置
+
+server:
+  port: 8080
+  host: "0.0.0.0"
+  mode: "debug" # debug, release, test
+
+database:
+  driver: "sqlite3"
+  path: "./data/auth.db"
+  max_open_conns: 10
+  max_idle_conns: 5
+
+auth:
+  magic_code: "123456" # 魔法验证码，可配置
+  session_timeout: 24 # 小时
+  jwt_secret: "your-secret-key-change-this"
+
+resend:
+  api_key: "" # Resend API密钥
+  from_email: "noreply@example.com"
+  from_name: "Resend Auth System"
+
+ui:
+  title: "Resend邮箱验证码审核系统"
+  theme: "dark" # dark, light
+  background_color: "#121212" # 深色背景
+  primary_color: "#1db954" # 绿色主色调
+  accent_color: "#ffffff"
+
+security:
+  rate_limit: 10 # 每分钟请求限制
+  enable_cors: true
+  allowed_origins:
+    - "*"
