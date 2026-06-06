@@ -1,462 +1,545 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{.Title}} - 登录</title>
     <style>
-        :root {
-            --bg-color: #121212;
-            --primary-color: #1db954;
-            --accent-color: #ffffff;
-            --text-color: #ffffff;
-            --text-secondary: #b3b3b3;
-            --card-bg: #181818;
-            --input-bg: #282828;
-            --border-color: #404040;
-        }
-
-        body {
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: #121212;
+            color: #ffffff;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            background-image: linear-gradient(135deg, #121212 0%, #1a1a1a 100%);
         }
-
-        .login-container {
+        
+        .container {
             width: 100%;
-            max-width: 400px;
-            padding: 40px;
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            max-width: 420px;
+            padding: 40px 20px;
         }
-
-        .login-header {
+        
+        .logo {
             text-align: center;
             margin-bottom: 40px;
         }
-
-        .login-header h1 {
-            margin: 0 0 10px 0;
-            color: var(--primary-color);
-            font-size: 28px;
+        
+        .logo h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1db954;
+            margin-bottom: 8px;
         }
-
-        .login-header p {
-            margin: 0;
-            color: var(--text-secondary);
+        
+        .logo p {
+            color: #b3b3b3;
             font-size: 14px;
         }
-
+        
+        .login-card {
+            background: rgba(30, 30, 30, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
         .form-group {
             margin-bottom: 24px;
         }
-
+        
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: var(--text-secondary);
             font-size: 14px;
             font-weight: 500;
+            color: #b3b3b3;
         }
-
-        .form-group input {
+        
+        .form-control {
             width: 100%;
-            padding: 12px 16px;
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
-            color: var(--text-color);
+            color: #ffffff;
             font-size: 16px;
-            box-sizing: border-box;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
         }
-
-        .form-group input:focus {
+        
+        .form-control:focus {
             outline: none;
-            border-color: var(--primary-color);
+            border-color: #1db954;
+            box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.2);
         }
-
-        .form-group input::placeholder {
+        
+        .form-control::placeholder {
             color: #666;
         }
-
-        .login-button {
+        
+        .btn {
             width: 100%;
             padding: 14px;
-            background-color: var(--primary-color);
+            background: #1db954;
             color: white;
             border: none;
             border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
+            transition: all 0.2s;
         }
-
-        .login-button:hover {
-            background-color: #1ed760;
+        
+        .btn:hover {
+            background: #1ed760;
+            transform: translateY(-1px);
         }
-
-        .login-button:active {
-            transform: scale(0.98);
+        
+        .btn:active {
+            transform: translateY(0);
         }
-
-        .login-button:disabled {
-            background-color: #666;
+        
+        .btn:disabled {
+            background: #535353;
             cursor: not-allowed;
         }
-
-        .verification-step {
-            display: none;
-        }
-
-        .verification-step.active {
-            display: block;
-        }
-
-        .verification-code {
+        
+        .divider {
             display: flex;
-            gap: 10px;
-            justify-content: center;
+            align-items: center;
+            margin: 24px 0;
         }
-
-        .verification-code input {
-            width: 50px;
-            height: 60px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
         }
-
-        .resend-link {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .resend-link a {
-            color: var(--primary-color);
-            text-decoration: none;
+        
+        .divider span {
+            padding: 0 16px;
+            color: #b3b3b3;
             font-size: 14px;
         }
-
-        .resend-link a:hover {
-            text-decoration: underline;
+        
+        .verification-code {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
         }
-
+        
+        .code-input {
+            flex: 1;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+        
+        .code-input::placeholder {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .resend-btn {
+            background: transparent;
+            color: #1db954;
+            border: 1px solid #1db954;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .resend-btn:hover {
+            background: rgba(29, 185, 84, 0.1);
+        }
+        
+        .resend-btn:disabled {
+            color: #666;
+            border-color: #666;
+            cursor: not-allowed;
+        }
+        
         .message {
-            padding: 12px;
+            padding: 12px 16px;
             border-radius: 8px;
             margin-bottom: 20px;
             font-size: 14px;
             display: none;
         }
-
+        
         .message.success {
-            background-color: rgba(29, 185, 84, 0.1);
-            color: var(--primary-color);
-            border: 1px solid rgba(29, 185, 84, 0.3);
-            display: block;
+            background: rgba(29, 185, 84, 0.1);
+            border: 1px solid #1db954;
+            color: #1db954;
         }
-
+        
         .message.error {
-            background-color: rgba(255, 0, 0, 0.1);
-            color: #ff4444;
-            border: 1px solid rgba(255, 0, 0, 0.3);
-            display: block;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff3333;
+            color: #ff3333;
         }
-
+        
+        .message.info {
+            background: rgba(33, 150, 243, 0.1);
+            border: 1px solid #2196f3;
+            color: #2196f3;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 24px;
+            color: #666;
+            font-size: 12px;
+        }
+        
         .loading {
             display: inline-block;
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top-color: var(--primary-color);
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
-            vertical-align: middle;
+            border-top-color: #ffffff;
+            animation: spin 1s ease-in-out infinite;
         }
-
+        
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-
-        .back-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            margin-bottom: 20px;
-        }
-
-        .back-link:hover {
-            color: var(--text-color);
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .login-card {
+                padding: 30px 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-header">
+    <div class="container">
+        <div class="logo">
             <h1>{{.Title}}</h1>
-            <p>请输入邮箱和魔法验证码进行登录</p>
+            <p>邮箱验证码审核系统</p>
         </div>
-
-        <div id="message" class="message"></div>
-
-        <div id="step1" class="verification-step active">
+        
+        <div class="login-card">
+            <div id="message" class="message"></div>
+            
             <form id="loginForm">
                 <div class="form-group">
                     <label for="email">邮箱地址</label>
-                    <input type="email" id="email" name="email" placeholder="请输入您的邮箱" required>
+                    <input type="email" id="email" class="form-control" placeholder="请输入您的邮箱" required>
                 </div>
-
+                
                 <div class="form-group">
                     <label for="magicCode">魔法验证码</label>
-                    <input type="password" id="magicCode" name="magicCode" placeholder="请输入魔法验证码" required>
+                    <input type="text" id="magicCode" class="form-control" placeholder="请输入魔法验证码" required>
                 </div>
-
-                <button type="submit" class="login-button" id="loginBtn">
-                    发送验证码
+                
+                <button type="submit" class="btn" id="loginBtn">
+                    <span>登录并发送验证码</span>
                 </button>
             </form>
-        </div>
-
-        <div id="step2" class="verification-step">
-            <a href="javascript:void(0)" onclick="goBackToStep1()" class="back-link">
-                ← 返回修改邮箱
-            </a>
             
-            <div class="form-group">
-                <label>验证码已发送到 <span id="userEmail"></span></label>
-                <div class="verification-code">
-                    <input type="text" maxlength="1" oninput="moveToNext(this, 1)">
-                    <input type="text" maxlength="1" oninput="moveToNext(this, 2)">
-                    <input type="text" maxlength="1" oninput="moveToNext(this, 3)">
-                    <input type="text" maxlength="1" oninput="moveToNext(this, 4)">
-                    <input type="text" maxlength="1" oninput="moveToNext(this, 5)">
-                    <input type="text" maxlength="1" oninput="moveToNext(this, 6)">
+            <div id="verificationSection" style="display: none;">
+                <div class="divider">
+                    <span>邮箱验证码</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>请输入6位验证码</label>
+                    <div class="verification-code">
+                        <input type="text" id="code1" class="form-control code-input" maxlength="1" placeholder="0">
+                        <input type="text" id="code2" class="form-control code-input" maxlength="1" placeholder="0">
+                        <input type="text" id="code3" class="form-control code-input" maxlength="1" placeholder="0">
+                        <input type="text" id="code4" class="form-control code-input" maxlength="1" placeholder="0">
+                        <input type="text" id="code5" class="form-control code-input" maxlength="1" placeholder="0">
+                        <input type="text" id="code6" class="form-control code-input" maxlength="1" placeholder="0">
+                    </div>
+                </div>
+                
+                <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+                    <button id="verifyBtn" class="btn" style="flex: 1; margin-right: 10px;">验证</button>
+                    <button id="resendBtn" class="resend-btn" disabled>60秒后重发</button>
                 </div>
             </div>
-
-            <button type="button" class="login-button" onclick="verifyCode()" id="verifyBtn">
-                验证
-            </button>
-
-            <div class="resend-link">
-                <a href="javascript:void(0)" onclick="resendCode()" id="resendLink">
-                    重新发送验证码 (60秒)
-                </a>
-            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2024 Resend邮箱验证码审核系统 | 仅供内部使用</p>
         </div>
     </div>
 
     <script>
+        const API_BASE = '/api';
         let currentEmail = '';
         let resendTimer = null;
         let resendSeconds = 60;
-
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        
+        function showMessage(text, type = 'info') {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            messageEl.style.display = 'block';
             
-            const email = document.getElementById('email').value;
-            const magicCode = document.getElementById('magicCode').value;
-            
-            if (!email || !magicCode) {
-                showMessage('请填写邮箱和魔法验证码', 'error');
-                return;
+            if (type !== 'error') {
+                setTimeout(() => {
+                    messageEl.style.display = 'none';
+                }, 5000);
             }
-
-            currentEmail = email;
-            showLoading(true, 'loginBtn', '发送中...');
-
-            // 调用API发送验证码
-            fetch('/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: email,
-                    magic_code: magicCode
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                showLoading(false, 'loginBtn', '发送验证码');
-                
-                if (data.success) {
-                    document.getElementById('userEmail').textContent = email;
-                    document.getElementById('step1').classList.remove('active');
-                    document.getElementById('step2').classList.add('active');
-                    startResendTimer();
-                    showMessage('验证码已发送到您的邮箱，请注意查收', 'success');
+        }
+        
+        function setLoading(button, isLoading) {
+            const btn = button;
+            if (isLoading) {
+                btn.disabled = true;
+                btn.innerHTML = '<div class="loading"></div>';
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = btn.getAttribute('data-original-text') || btn.textContent;
+            }
+        }
+        
+        function startResendTimer() {
+            const resendBtn = document.getElementById('resendBtn');
+            resendBtn.disabled = true;
+            resendBtn.textContent = `${resendSeconds}秒后重发`;
+            
+            resendTimer = setInterval(() => {
+                resendSeconds--;
+                if (resendSeconds <= 0) {
+                    clearInterval(resendTimer);
+                    resendBtn.disabled = false;
+                    resendBtn.textContent = '重发验证码';
+                    resendSeconds = 60;
                 } else {
-                    showMessage(data.message || '发送验证码失败', 'error');
+                    resendBtn.textContent = `${resendSeconds}秒后重发`;
                 }
-            })
-            .catch(error => {
-                showLoading(false, 'loginBtn', '发送验证码');
-                showMessage('网络错误，请稍后重试', 'error');
-                console.error('Error:', error);
-            });
-        });
-
-        function goBackToStep1() {
-            document.getElementById('step2').classList.remove('active');
-            document.getElementById('step1').classList.add('active');
-            clearInterval(resendTimer);
-            document.getElementById('resendLink').textContent = '重新发送验证码';
+            }, 1000);
         }
-
-        function moveToNext(input, nextIndex) {
-            if (input.value.length === 1) {
-                const nextInput = input.parentElement.querySelector(`input:nth-child(${nextIndex + 1})`);
-                if (nextInput) {
-                    nextInput.focus();
-                }
-            }
-        }
-
+        
         function getVerificationCode() {
-            const inputs = document.querySelectorAll('.verification-code input');
-            let code = '';
-            inputs.forEach(input => {
-                code += input.value;
-            });
+            const code = [
+                document.getElementById('code1').value,
+                document.getElementById('code2').value,
+                document.getElementById('code3').value,
+                document.getElementById('code4').value,
+                document.getElementById('code5').value,
+                document.getElementById('code6').value
+            ].join('');
+            
             return code;
         }
-
-        function verifyCode() {
-            const code = getVerificationCode();
-            if (code.length !== 6) {
-                showMessage('请输入完整的6位验证码', 'error');
+        
+        function clearVerificationCode() {
+            for (let i = 1; i <= 6; i++) {
+                document.getElementById(`code${i}`).value = '';
+            }
+        }
+        
+        // 自动跳转到下一个输入框
+        document.querySelectorAll('.code-input').forEach((input, index, inputs) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length === 1 && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+                
+                // 验证所有6位是否已输入
+                const code = getVerificationCode();
+                if (code.length === 6) {
+                    document.getElementById('verifyBtn').focus();
+                }
+            });
+            
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+        });
+        
+        // 登录表单提交
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const magicCode = document.getElementById('magicCode').value.trim();
+            
+            if (!email || !magicCode) {
+                showMessage('请输入邮箱和魔法验证码', 'error');
                 return;
             }
-
-            showLoading(true, 'verifyBtn', '验证中...');
-
-            fetch('/api/verify', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: currentEmail,
-                    code: code
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                showLoading(false, 'verifyBtn', '验证');
+            
+            const loginBtn = document.getElementById('loginBtn');
+            setLoading(loginBtn, true);
+            
+            try {
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        magic_code: magicCode
+                    })
+                });
                 
-                if (data.success) {
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showMessage('验证码已发送到邮箱，请查收', 'success');
+                    currentEmail = email;
+                    
+                    // 显示验证码输入区域
+                    document.getElementById('verificationSection').style.display = 'block';
+                    document.getElementById('code1').focus();
+                    
+                    // 开始重发计时器
+                    startResendTimer();
+                } else {
+                    showMessage(data.message || '登录失败', 'error');
+                }
+            } catch (error) {
+                showMessage('网络错误，请稍后重试', 'error');
+                console.error('Login error:', error);
+            } finally {
+                setLoading(loginBtn, false);
+            }
+        });
+        
+        // 验证按钮点击
+        document.getElementById('verifyBtn').addEventListener('click', async () => {
+            const code = getVerificationCode();
+            
+            if (code.length !== 6) {
+                showMessage('请输入6位验证码', 'error');
+                return;
+            }
+            
+            const verifyBtn = document.getElementById('verifyBtn');
+            setLoading(verifyBtn, true);
+            
+            try {
+                const response = await fetch(`${API_BASE}/verify`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: currentEmail,
+                        code: code
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
                     showMessage('验证成功！正在跳转到仪表盘...', 'success');
-                    // 保存token
+                    
+                    // 保存token到localStorage
                     if (data.data && data.data.token) {
                         localStorage.setItem('auth_token', data.data.token);
                     }
+                    
                     // 跳转到仪表盘
                     setTimeout(() => {
                         window.location.href = '/dashboard';
                     }, 1500);
                 } else {
-                    showMessage(data.message || '验证码错误', 'error');
+                    showMessage(data.message || '验证失败', 'error');
+                    clearVerificationCode();
+                    document.getElementById('code1').focus();
                 }
-            })
-            .catch(error => {
-                showLoading(false, 'verifyBtn', '验证');
+            } catch (error) {
                 showMessage('网络错误，请稍后重试', 'error');
-                console.error('Error:', error);
-            });
-        }
-
-        function resendCode() {
-            if (resendSeconds > 0) {
-                return;
+                console.error('Verify error:', error);
+            } finally {
+                setLoading(verifyBtn, false);
             }
-
-            showLoading(true, 'resendLink', '发送中...');
-
-            fetch('/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: currentEmail,
-                    magic_code: document.getElementById('magicCode').value
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                showLoading(false, 'resendLink', '重新发送验证码 (60秒)');
+        });
+        
+        // 重发验证码按钮
+        document.getElementById('resendBtn').addEventListener('click', async () => {
+            if (!currentEmail) return;
+            
+            const resendBtn = document.getElementById('resendBtn');
+            setLoading(resendBtn, true);
+            
+            try {
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: currentEmail,
+                        magic_code: document.getElementById('magicCode').value.trim()
+                    })
+                });
                 
-                if (data.success) {
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
                     showMessage('验证码已重新发送', 'success');
+                    clearVerificationCode();
+                    document.getElementById('code1').focus();
+                    
+                    // 重置计时器
+                    if (resendTimer) {
+                        clearInterval(resendTimer);
+                    }
                     startResendTimer();
                 } else {
-                    showMessage(data.message || '发送验证码失败', 'error');
+                    showMessage(data.message || '重发失败', 'error');
                 }
-            })
-            .catch(error => {
-                showLoading(false, 'resendLink', '重新发送验证码 (60秒)');
+            } catch (error) {
                 showMessage('网络错误，请稍后重试', 'error');
-                console.error('Error:', error);
-            });
-        }
-
-        function startResendTimer() {
-            resendSeconds = 60;
-            clearInterval(resendTimer);
-            
-            resendTimer = setInterval(() => {
-                resendSeconds--;
-                const link = document.getElementById('resendLink');
-                
-                if (resendSeconds > 0) {
-                    link.textContent = `重新发送验证码 (${resendSeconds}秒)`;
-                    link.style.pointerEvents = 'none';
-                    link.style.opacity = '0.5';
-                } else {
-                    link.textContent = '重新发送验证码';
-                    link.style.pointerEvents = 'auto';
-                    link.style.opacity = '1';
-                    clearInterval(resendTimer);
-                }
-            }, 1000);
-        }
-
-        function showMessage(text, type) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.textContent = text;
-            messageDiv.className = 'message ' + type;
-        }
-
-        function showLoading(show, elementId, originalText) {
-            const element = document.getElementById(elementId);
-            if (show) {
-                element.innerHTML = '<span class="loading"></span>' + originalText;
-                element.disabled = true;
-            } else {
-                element.innerHTML = originalText;
-                element.disabled = false;
+                console.error('Resend error:', error);
+            } finally {
+                setLoading(resendBtn, false);
             }
-        }
-
-        // 检查是否已登录
-        const token = localStorage.getItem('auth_token');
-        if (token) {
-            window.location.href = '/dashboard';
-        }
+        });
+        
+        // 页面加载时检查是否已登录
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('auth_token');
+            if (token) {
+                // 验证token是否有效
+                fetch(`${API_BASE}/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/dashboard';
+                    } else {
+                        localStorage.removeItem('auth_token');
+                    }
+                })
+                .catch(() => {
+                    localStorage.removeItem('auth_token');
+                });
+            }
+        });
     </script>
 </body>
 </html>

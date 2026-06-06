@@ -1,7 +1,7 @@
 # Resend邮箱验证码审核页系统配置
 
 server:
-  port: 8080
+  port: 8082
   host: "0.0.0.0"
   mode: "debug" # debug, release, test
 
