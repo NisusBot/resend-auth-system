@@ -50,6 +50,9 @@ func main() {
 		})
 	}
 
+	// 加载 HTML 模板
+	r.LoadHTMLGlob("templates/*.html")
+
 	// 设置静态文件服务
 	r.Static("/static", "./static")
 	r.StaticFile("/favicon.ico", "./static/favicon.ico")

@@ -50,8 +50,8 @@ func RegisterRoutes(r *gin.Engine, cfg *config.Config) {
 	// 页面路由
 	r.GET("/", h.handleIndex)
 	r.GET("/login", h.handleLoginPage)
-	r.GET("/dashboard", h.AuthMiddleware(), h.handleDashboardPage)
-	r.GET("/music", h.AuthMiddleware(), h.handleMusicPage)
+	r.GET("/dashboard", h.PageAuthMiddleware(), h.handleDashboardPage)
+	r.GET("/music", h.PageAuthMiddleware(), h.handleMusicPage)
 }
 
 // AuthMiddleware 认证中间件
@@ -268,24 +268,77 @@ func (h *Handlers) handleIndex(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/login")
 }
 
+// PageAuthMiddleware 页面专用认证中间件
+// 未授权或未验证时跳转 /login(而不是返回 401 JSON)
+func (h *Handlers) PageAuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tokenString := c.GetHeader("Authorization")
+		if tokenString == "" {
+			// 尝试从 cookie 获取
+			tokenString, _ = c.Cookie("auth_token")
+		}
+
+		if tokenString == "" {
+			c.Redirect(http.StatusFound, "/login")
+			c.Abort()
+			return
+		}
+
+		// 移除 Bearer 前缀
+		tokenString = strings.TrimPrefix(tokenString, "Bearer ")
+
+		claims, err := h.authService.ValidateToken(tokenString)
+		if err != nil {
+			c.Redirect(http.StatusFound, "/login")
+			c.Abort()
+			return
+		}
+
+		if !claims.Verified {
+			c.Redirect(http.StatusFound, "/login")
+			c.Abort()
+			return
+		}
+
+		// 将用户信息保存到上下文,供模板渲染使用
+		c.Set("user_id", claims.UserID)
+		c.Set("user_email", claims.Email)
+		c.Set("user_verified", claims.Verified)
+
+		c.Next()
+	}
+}
+
 func (h *Handlers) handleLoginPage(c *gin.Context) {
-	// 这里应该渲染HTML模板
-	c.JSON(http.StatusOK, gin.H{
-		"page": "login",
-		"config": h.cfg.UI,
+	c.HTML(http.StatusOK, "login.html", gin.H{
+		"Title":           h.cfg.UI.Title,
+		"Theme":           h.cfg.UI.Theme,
+		"BackgroundColor": h.cfg.UI.BackgroundColor,
+		"PrimaryColor":    h.cfg.UI.PrimaryColor,
+		"AccentColor":     h.cfg.UI.AccentColor,
 	})
 }
 
 func (h *Handlers) handleDashboardPage(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"page": "dashboard",
-		"config": h.cfg.UI,
+	userEmail, _ := c.Get("user_email")
+	c.HTML(http.StatusOK, "dashboard.html", gin.H{
+		"Title":           h.cfg.UI.Title,
+		"Theme":           h.cfg.UI.Theme,
+		"BackgroundColor": h.cfg.UI.BackgroundColor,
+		"PrimaryColor":    h.cfg.UI.PrimaryColor,
+		"AccentColor":     h.cfg.UI.AccentColor,
+		"UserEmail":       userEmail,
 	})
 }
 
 func (h *Handlers) handleMusicPage(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"page": "music",
-		"config": h.cfg.UI,
+	userEmail, _ := c.Get("user_email")
+	c.HTML(http.StatusOK, "music.html", gin.H{
+		"Title":           h.cfg.UI.Title,
+		"Theme":           h.cfg.UI.Theme,
+		"BackgroundColor": h.cfg.UI.BackgroundColor,
+		"PrimaryColor":    h.cfg.UI.PrimaryColor,
+		"AccentColor":     h.cfg.UI.AccentColor,
+		"UserEmail":       userEmail,
 	})
 }
